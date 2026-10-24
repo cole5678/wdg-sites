@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stedman &amp; Company | Plumbing &amp; Heating in Charlestown, RI</title>
+<meta name="description" content="Stedman &amp; Company Plumbing &amp; Heating — RI's local plumbing &amp; heating experts. Neighbors working for neighbors. Call (401) 364-9888.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23ffffff' stroke='%23204d84' stroke-width='4'/%3E%3Ctext x='50' y='62' font-size='46' font-family='Georgia' font-weight='700' fill='%23204d84' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#a3231f;
+    --red-deep:#7c1917;
+    --orange:#d1451c;
+    --blue:#1f5590;
+    --blue-deep:#153c68;
+    --cream:#fdf9f1;
+    --paper:#ffffff;
+    --ink:#232323;
+    --ink-soft:#5a5650;
+    --line:#e7ded0;
+    --gold:#f0b429;
+    --shadow:0 20px 50px -22px rgba(30,20,10,0.28);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Nunito',Arial,sans-serif;
+    font-size:1.05rem;
+    color:var(--ink);
+    background:var(--cream);
+    padding-bottom:78px;
+  }
+  h1,h2,h3,.logo{font-family:'Poppins',Arial,sans-serif;}
+  a{color:inherit;}
+  img,svg{max-width:100%;display:block;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- top accent stripe ---------- */
+  .top-stripe{height:8px;background:linear-gradient(90deg,var(--red) 0%,var(--red) 50%,var(--blue) 50%,var(--blue) 100%);}
+
+  /* ---------- nav ---------- */
+  header{position:sticky;top:0;z-index:40;background:var(--paper);border-bottom:3px solid var(--blue);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1100px;margin:0 auto;}
+  .logo{display:flex;align-items:center;gap:12px;font-weight:800;font-size:1.28rem;color:var(--blue-deep);letter-spacing:-0.01em;line-height:1.15;}
+  .logo-mark{
+    width:46px;height:46px;border-radius:50%;background:var(--paper);border:3px solid var(--blue);
+    display:flex;align-items:center;justify-content:center;color:var(--blue-deep);font-weight:900;
+    font-family:'Poppins',serif;font-size:1.3rem;flex-shrink:0;
+  }
+  .logo small{display:block;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.68rem;letter-spacing:0.04em;text-transform:uppercase;color:var(--red);}
+  .nav-links{display:flex;gap:26px;font-weight:700;font-size:0.95rem;list-style:none;margin:0;padding:0;}
+  .nav-links a{text-decoration:none;color:var(--ink);}
+  .nav-links a:hover{color:var(--red);}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:12px 22px;border-radius:8px;font-weight:800;font-size:0.95rem;
+    text-decoration:none;cursor:pointer;border:2px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary{background:var(--red);color:#fff;box-shadow:0 10px 20px -8px rgba(163,35,31,0.5);}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{background:transparent;color:var(--blue-deep);border-color:var(--blue);}
+  .btn-ghost:hover{background:var(--blue);color:#fff;}
+  @media(max-width:820px){.nav-links{display:none;}}
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:linear-gradient(135deg,var(--orange) 0%,var(--red) 55%,var(--red-deep) 100%);
+    color:#fff;
+    padding:72px 0 84px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:'';position:absolute;inset:0;
+    background-image:repeating-linear-gradient(-45deg, rgba(255,255,255,0.06) 0 16px, transparent 16px 32px);
+    pointer-events:none;
+  }
+  .hero-grid{max-width:700px;margin:0 auto;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--blue-deep);color:#fff;
+    padding:7px 18px;border-radius:999px;font-size:0.82rem;font-weight:800;
+    margin-bottom:22px;letter-spacing:0.03em;text-transform:uppercase;
+  }
+  .hero h1{font-size:clamp(2.1rem,4.6vw,3.3rem);line-height:1.14;letter-spacing:-0.01em;margin:0 0 16px;font-weight:900;}
+  .hero p.lead{font-size:1.22rem;color:#ffe9df;max-width:540px;margin:0 auto 32px;line-height:1.6;font-weight:600;}
+  .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;}
+  .hero-stats{display:flex;gap:36px;margin-top:46px;flex-wrap:wrap;justify-content:center;}
+  .hero-stats div{text-align:center;}
+  .hero-stats strong{display:block;font-family:'Poppins',serif;font-size:1.35rem;font-weight:800;}
+  .hero-stats span{font-size:0.8rem;color:#ffe9df;font-weight:600;}
+
+  /* ---------- section shell ---------- */
+  section{padding:76px 0;}
+  .section-head{max-width:640px;margin:0 auto 46px;text-align:center;}
+  .section-head .kicker{display:inline-block;font-weight:800;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
+  .section-head h2{font-size:clamp(1.9rem,3.5vw,2.4rem);letter-spacing:-0.01em;margin:0 0 12px;color:var(--blue-deep);font-weight:800;}
+  .section-head p{color:var(--ink-soft);font-size:1.05rem;line-height:1.6;margin:0;}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ---------- services ---------- */
+  #services{background:var(--paper);}
+  .service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;}
+  .service-card{
+    background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 24px;box-shadow:var(--shadow);
+  }
+  .service-card .icon{
+    width:52px;height:52px;border-radius:12px;background:var(--blue);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:16px;
+  }
+  .service-card h3{margin:0 0 8px;font-size:1.12rem;color:var(--blue-deep);}
+  .service-card p{margin:0 0 14px;color:var(--ink-soft);font-size:0.96rem;line-height:1.55;}
+  .service-price{
+    display:inline-block;font-weight:800;font-size:0.92rem;color:var(--red);
+    border-top:1px dashed var(--line);padding-top:12px;width:100%;
+  }
+  .service-price .tbd{color:var(--ink-soft);font-weight:600;font-style:italic;font-size:0.88rem;}
+
+  .pricing-note{
+    margin-top:36px;background:#fbeee9;border:1px solid #f0cfc4;border-radius:var(--radius);
+    padding:20px 24px;text-align:center;color:var(--red-deep);font-weight:700;font-size:0.95rem;
+  }
+
+  /* ---------- why us ---------- */
+  #why{background:var(--cream);}
+  .why-grid{display:flex;gap:48px;align-items:center;flex-wrap:wrap;}
+  .why-grid > div{flex:1;min-width:280px;}
+  .why-badge{
+    width:56px;height:56px;border-radius:50%;background:var(--blue);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:18px;
+  }
+  #why h2{font-size:clamp(1.8rem,3.2vw,2.3rem);letter-spacing:-0.01em;margin:0 0 16px;color:var(--blue-deep);font-weight:800;}
+  #why p{color:var(--ink-soft);line-height:1.75;font-size:1.05rem;margin:0 0 14px;}
+  .why-panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);}
+  .why-panel h3{margin:0 0 14px;font-size:1.15rem;color:var(--blue-deep);}
+  .why-panel p{margin-bottom:10px !important;color:var(--ink);}
+
+  /* ---------- service area ---------- */
+  #area{background:var(--blue-deep);color:#eaf1fb;}
+  #area .section-head h2{color:#fff;}
+  #area .section-head p{color:#bcd0e7;}
+  #area .kicker{color:var(--gold);}
+  .area-list{
+    max-width:700px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+  }
+  .area-list span{
+    background:#204a7a;border:1px solid #2c5c94;padding:10px 18px;border-radius:999px;font-weight:700;font-size:0.92rem;
+  }
+
+  /* ---------- hours / CTA ---------- */
+  .cta-banner{
+    background:linear-gradient(135deg,var(--orange) 0%,var(--red) 100%);
+    border-radius:26px;padding:56px 40px;color:#fff;text-align:center;
+  }
+  .cta-banner h2{font-size:clamp(1.8rem,4vw,2.4rem);margin:0 0 12px;font-weight:800;}
+  .cta-banner p{max-width:480px;margin:0 auto 26px;color:#ffe9df;font-size:1.05rem;line-height:1.6;font-weight:600;}
+  .phone-big{
+    display:inline-flex;align-items:center;gap:12px;background:var(--blue-deep);color:#fff;
+    font-family:'Poppins',serif;font-weight:800;font-size:clamp(1.3rem,3vw,1.8rem);
+    padding:18px 32px;border-radius:10px;text-decoration:none;
+    transition:transform .15s ease;
+  }
+  .phone-big:hover{transform:translateY(-2px);}
+  .cta-sub{margin-top:16px;font-size:0.9rem;color:#ffe9df;}
+  .cta-sub a{color:#fff;text-decoration:underline;}
+  .hours-strip{
+    max-width:420px;margin:26px auto 0;background:rgba(255,255,255,0.14);border-radius:12px;
+    padding:14px 22px;font-size:0.9rem;font-weight:700;
+  }
+
+  /* ---------- footer ---------- */
+  footer{background:var(--blue-deep);color:#eaf1fb;padding:52px 0 36px;}
+  .footer-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:36px;margin-bottom:32px;}
+  .footer-brand p{color:#bcd0e7;max-width:300px;line-height:1.6;font-size:0.95rem;margin-top:14px;}
+  .footer-col h5{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);margin:0 0 14px;}
+  .footer-col a, .footer-col p{display:block;color:#eaf1fb;text-decoration:none;font-size:0.98rem;margin-bottom:8px;line-height:1.5;}
+  .footer-col a:hover{color:var(--gold);}
+  .footer-bottom{border-top:1px solid #2c5c94;padding-top:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:0.85rem;color:#bcd0e7;}
+
+  /* ---------- sticky call bar ---------- */
+  .call-bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:var(--red-deep);border-top:3px solid var(--gold);
+    color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:12px;
+  }
+  .call-bar a{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:800;font-family:'Poppins',serif;font-size:1.02rem;}
+  .call-bar .ring{width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--red-deep);display:flex;align-items:center;justify-content:center;}
+
+  ::selection{background:var(--gold);color:var(--red-deep);}
+</style>
+</head>
+<body>
+
+<div class="top-stripe"></div>
+<header id="siteHeader">
+  <nav>
+    <div class="logo">
+      <span class="logo-mark">S</span>
+      <span>Stedman &amp; Company<br><small>Plumbing &amp; Heating</small></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#why">Why Us</a></li>
+      <li><a href="#area">Service Area</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a class="btn btn-primary" href="tel:+14013649888">Call Now</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="eyebrow">🔧 Charlestown, RI</div>
+    <h1>Neighbors Working for Neighbors</h1>
+    <p class="lead">RI's local plumbing &amp; heating experts — honest work, fair prices, and a team that actually shows up.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="tel:+14013649888">📞 Call (401) 364-9888</a>
+      <a class="btn btn-ghost" style="background:#fff;" href="#services">View Services</a>
+    </div>
+    <div class="hero-stats">
+      <div><strong>Family Owned</strong><span>Local &amp; local-run</span></div>
+      <div><strong>Licensed</strong><span>Plumbing &amp; heating</span></div>
+      <div><strong>Fast Response</strong><span>Serving RI</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Services &amp; Pricing</span>
+      <h2>What we offer</h2>
+      <p>From everyday repairs to full heating system service — here's what we handle. Pricing below will be updated with current rates.</p>
+    </div>
+    <div class="service-grid">
+      <div class="service-card reveal">
+        <div class="icon">🚰</div>
+        <h3>Plumbing Repair</h3>
+        <p>Leaky faucets, running toilets, burst pipes, and everyday plumbing fixes done right.</p>
+        <span class="service-price"><span class="tbd">Call for pricing</span></span>
+      </div>
+      <div class="service-card reveal">
+        <div class="icon">🔥</div>
+        <h3>Heating &amp; Oil Burner Service</h3>
+        <p>Furnace and boiler repair, oil &amp; gas burner tune-ups, and seasonal maintenance.</p>
+        <span class="service-price"><span class="tbd">Call for pricing</span></span>
+      </div>
+      <div class="service-card reveal">
+        <div class="icon">🚿</div>
+        <h3>Water Heater Install &amp; Repair</h3>
+        <p>New water heater installation, replacements, and repair for tank and tankless units.</p>
+        <span class="service-price"><span class="tbd">Call for pricing</span></span>
+      </div>
+      <div class="service-card reveal">
+        <div class="icon">🌀</div>
+        <h3>Drain &amp; Sewer Cleaning</h3>
+        <p>Clogged drains, slow sinks, and sewer line cleaning to get things flowing again.</p>
+        <span class="service-price"><span class="tbd">Call for pricing</span></span>
+      </div>
+      <div class="service-card reveal">
+        <div class="icon">🛁</div>
+        <h3>Bathroom &amp; Kitchen Plumbing</h3>
+        <p>Fixture installs, remodel plumbing, and repiping for kitchen and bath projects.</p>
+        <span class="service-price"><span class="tbd">Call for pricing</span></span>
+      </div>
+      <div class="service-card reveal">
+        <div class="icon">🚨</div>
+        <h3>Emergency Service</h3>
+        <p>Burst pipe or no heat? Call us and we'll get a tech out to handle the emergency.</p>
+        <span class="service-price"><span class="tbd">Call for pricing</span></span>
+      </div>
+    </div>
+    <div class="pricing-note reveal">
+      Pricing is being finalized and will be added here soon. Call (401) 364-9888 for a free, honest quote in the meantime.
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap why-grid">
+    <div class="reveal">
+      <div class="why-badge">🏡</div>
+      <h2>Neighbors working for neighbors</h2>
+      <p>Stedman &amp; Company is a locally owned plumbing and heating business serving Rhode Island. We're not a call center — we're your neighbors, and we treat every job like it's in our own home.</p>
+      <p>Whether it's a leaky faucet or a full heating system replacement, you'll get straight answers, fair pricing, and work that's done properly the first time.</p>
+    </div>
+    <div class="reveal">
+      <div class="why-panel">
+        <h3>Why RI homeowners call us</h3>
+        <p>✓ Locally owned &amp; operated</p>
+        <p>✓ Licensed plumbing &amp; heating technicians</p>
+        <p>✓ Honest, upfront pricing</p>
+        <p>✓ Plumbing and heating under one roof</p>
+        <p>✓ Fast, friendly service</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="area">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Service Area</span>
+      <h2>Where we work</h2>
+      <p>Based in Charlestown, RI and proud to serve homes and businesses throughout the surrounding area.</p>
+    </div>
+    <div class="area-list reveal">
+      <span>Charlestown</span>
+      <span>Westerly</span>
+      <span>South Kingstown</span>
+      <span>North Kingstown</span>
+      <span>Narragansett</span>
+      <span>Richmond</span>
+      <span>Hopkinton</span>
+      <span>Exeter</span>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="cta-banner reveal">
+      <h2>Need a plumber or heating tech?</h2>
+      <a class="phone-big" href="tel:+14013649888">
+        <span>📞</span> (401) 364-9888
+      </a>
+      <div class="cta-sub">10 Crossland St, Charlestown, RI 02813</div>
+      <div class="hours-strip">Mon–Fri: 8:00 AM – 4:00 PM &nbsp;|&nbsp; Call to confirm hours &amp; availability</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo" style="color:#fff;"><span class="logo-mark">S</span> Stedman &amp; Company</div>
+        <p>RI's local plumbing &amp; heating experts. Neighbors working for neighbors since day one.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <a href="#services">Plumbing Repair</a>
+        <a href="#services">Heating &amp; Oil Burner</a>
+        <a href="#services">Water Heaters</a>
+        <a href="#services">Drain Cleaning</a>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <a href="tel:+14013649888">📞 (401) 364-9888</a>
+        <p>📍 10 Crossland St<br>Charlestown, RI 02813</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> Stedman &amp; Company Plumbing &amp; Heating, Inc.</span>
+      <span>Neighbors Working for Neighbors.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="call-bar">
+  <a href="tel:+14013649888">
+    <span class="ring">📞</span>
+    <span>Call — (401) 364-9888</span>
+  </a>
+</div>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

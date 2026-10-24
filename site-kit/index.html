@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Client Site Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef1f6;
+    --panel:#ffffff;
+    --ink:#16192a;
+    --ink-soft:#5a6178;
+    --line:#dde2ec;
+    --accent:#3b82f6;
+    --field:#f7f9fc;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1320;--panel:#171c2c;--ink:#e8ebf4;--ink-soft:#9aa3bd;--line:#2a3148;--field:#11162a;
+    }
+  }
+  :root[data-theme="dark"]{--bg:#0f1320;--panel:#171c2c;--ink:#e8ebf4;--ink-soft:#9aa3bd;--line:#2a3148;--field:#11162a;}
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;}
+  .app{display:grid;grid-template-columns:400px 1fr;height:100vh;}
+  @media(max-width:900px){.app{grid-template-columns:1fr;height:auto;}.preview-col{height:80vh;}}
+
+  /* ---------- editor ---------- */
+  .editor{background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column;}
+  .editor-head{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line);padding:16px 18px;}
+  .editor-head h1{margin:0 0 10px;font-size:1.05rem;letter-spacing:-0.01em;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;}
+  .btn{border:1px solid var(--line);background:var(--field);color:var(--ink);padding:8px 12px;border-radius:8px;font:600 0.82rem 'Inter',sans-serif;cursor:pointer;}
+  .btn:hover{border-color:var(--accent);}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  select.btn{padding-right:6px;}
+  .form{padding:8px 18px 40px;}
+  details{border-bottom:1px solid var(--line);padding:6px 0;}
+  summary{cursor:pointer;font-weight:700;padding:10px 0;list-style:none;display:flex;justify-content:space-between;}
+  summary::after{content:'+';color:var(--ink-soft);}
+  details[open] summary::after{content:'–';}
+  label{display:block;font-weight:600;font-size:0.78rem;color:var(--ink-soft);margin:10px 0 4px;}
+  .hint{font-weight:400;opacity:.8;}
+  input[type=text],input[type=tel],textarea,select{
+    width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;
+    background:var(--field);color:var(--ink);font:400 0.88rem 'Inter',sans-serif;
+  }
+  textarea{resize:vertical;min-height:70px;line-height:1.45;}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .colors{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .colors label{margin-top:6px;}
+  input[type=color]{width:100%;height:34px;border:1px solid var(--line);border-radius:8px;background:var(--field);padding:2px;cursor:pointer;}
+  .file-row{display:flex;gap:8px;align-items:center;}
+  .file-row input[type=file]{font-size:0.8rem;flex:1;min-width:0;}
+
+  /* ---------- preview ---------- */
+  .preview-col{display:flex;flex-direction:column;min-width:0;}
+  .preview-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);gap:10px;}
+  .preview-bar .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .preview-bar .seg button{border:none;background:var(--field);color:var(--ink-soft);padding:7px 12px;font:600 0.8rem 'Inter',sans-serif;cursor:pointer;}
+  .preview-bar .seg button.on{background:var(--accent);color:#fff;}
+  .status{font-size:0.78rem;color:var(--ink-soft);}
+  .frame-wrap{flex:1;display:flex;justify-content:center;padding:16px;overflow:auto;}
+  iframe{border:1px solid var(--line);border-radius:10px;background:#fff;width:100%;height:100%;min-height:500px;transition:width .2s ease;}
+  .frame-wrap.mobile iframe{width:390px;max-width:100%;}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="editor">
+    <div class="editor-head">
+      <h1>Client Site Kit</h1>
+      <div class="toolbar">
+        <select class="btn" id="example" title="Load an example">
+          <option value="">Load example…</option>
+          <option value="electric">Electrician (Modern)</option>
+          <option value="barber">Barber (Classic)</option>
+          <option value="landscape">Landscaper (Fresh)</option>
+        </select>
+        <button class="btn" id="importBtn">Import</button>
+        <button class="btn" id="exportBtn">Save project</button>
+        <button class="btn btn-primary" id="downloadBtn">Download site</button>
+        <input type="file" id="importFile" accept=".json" hidden>
+      </div>
+    </div>
+
+    <div class="form" id="form">
+      <details open>
+        <summary>Business</summary>
+        <label>Business name</label><input type="text" data-k="name">
+        <label>Logo letter <span class="hint">(blank = first letter)</span></label><input type="text" data-k="logoLetter" maxlength="2">
+        <div class="row">
+          <div><label>Phone</label><input type="tel" data-k="phone"></div>
+          <div><label>Town / area</label><input type="text" data-k="location"></div>
+        </div>
+        <label>Street address</label><input type="text" data-k="address">
+        <label>Email <span class="hint">(optional)</span></label><input type="text" data-k="email">
+      </details>
+
+      <details open>
+        <summary>Look</summary>
+        <label>Style</label>
+        <select data-k="theme">
+          <option value="modern">Modern: Space Grotesk + Inter</option>
+          <option value="classic">Classic: Playfair + Garamond</option>
+          <option value="fresh">Fresh: Poppins + Nunito</option>
+          <option value="bold">Bold: Oswald + Roboto</option>
+        </select>
+        <div class="colors">
+          <div><label>Dark</label><input type="color" data-k="cDark"></div>
+          <div><label>Accent</label><input type="color" data-k="cAccent"></div>
+          <div><label>Background</label><input type="color" data-k="cPaper"></div>
+        </div>
+        <label>Hero photo <span class="hint">(optional, embedded in the file)</span></label>
+        <div class="file-row">
+          <input type="file" id="heroFile" accept="image/*">
+          <button class="btn" id="heroClear" type="button">Remove</button>
+        </div>
+      </details>
+
+      <details open>
+        <summary>Hero</summary>
+        <label>Badge emoji</label><input type="text" data-k="emoji" maxlength="4">
+        <label>Headline</label><input type="text" data-k="headline">
+        <label>Highlighted end of headline <span class="hint">(optional)</span></label><input type="text" data-k="headlineAccent">
+        <label>Intro line</label><textarea data-k="lead"></textarea>
+        <div class="row">
+          <div><label>Rating</label><input type="text" data-k="rating" placeholder="5.0"></div>
+          <div><label>Rating source</label><input type="text" data-k="ratingSource" placeholder="Google"></div>
+        </div>
+        <div class="row">
+          <div><label>Second stat</label><input type="text" data-k="stat2"></div>
+          <div><label>Stat label</label><input type="text" data-k="stat2Label"></div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Services</summary>
+        <label>Section title</label><input type="text" data-k="servicesTitle">
+        <label>Section blurb</label><input type="text" data-k="servicesBlurb">
+        <label>One per line: <span class="hint">emoji | name | description</span></label>
+        <textarea data-k="services" rows="7"></textarea>
+      </details>
+
+      <details>
+        <summary>Reviews</summary>
+        <label>One per line: <span class="hint">quote | reviewer name</span></label>
+        <textarea data-k="reviews" rows="6"></textarea>
+      </details>
+
+      <details>
+        <summary>About</summary>
+        <label>Heading</label><input type="text" data-k="aboutTitle">
+        <label>Paragraphs <span class="hint">(blank line between)</span></label><textarea data-k="aboutText" rows="5"></textarea>
+        <label>Checklist heading</label><input type="text" data-k="whyTitle">
+        <label>Checklist <span class="hint">(one per line)</span></label><textarea data-k="why" rows="4"></textarea>
+      </details>
+
+      <details>
+        <summary>Hours</summary>
+        <label>One per line: <span class="hint">Day | hours</span>. Leave blank to hide.</label>
+        <textarea data-k="hours" rows="7"></textarea>
+      </details>
+
+      <details>
+        <summary>Call to action &amp; footer</summary>
+        <label>Call-to-action heading</label><input type="text" data-k="ctaTitle">
+        <label>Footer blurb</label><textarea data-k="footerBlurb"></textarea>
+        <label>Footer tagline</label><input type="text" data-k="footerTag">
+      </details>
+    </div>
+  </aside>
+
+  <main class="preview-col">
+    <div class="preview-bar">
+      <div class="seg">
+        <button id="vDesk" class="on">Desktop</button>
+        <button id="vMob">Mobile</button>
+      </div>
+      <span class="status" id="status">Autosaved in this browser</span>
+    </div>
+    <div class="frame-wrap" id="frameWrap"><iframe id="preview" title="Site preview"></iframe></div>
+  </main>
+</div>
+
+<script>
+/* ---------- themes: font pairs + default colors ---------- */
+const THEMES = {
+  modern:  { head:"'Space Grotesk',sans-serif", body:"'Inter',system-ui,sans-serif",
+             fonts:"family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800",
+             dark:"#14213d", accent:"#3b82f6", paper:"#f7f9fc", radius:"20px", logoRound:"9px", size:"1rem" },
+  classic: { head:"'Playfair Display',Georgia,serif", body:"'EB Garamond',Georgia,serif",
+             fonts:"family=Playfair+Display:wght@600;700;800;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400",
+             dark:"#571620", accent:"#d4af6a", paper:"#faf5e8", radius:"18px", logoRound:"50%", size:"1.08rem" },
+  fresh:   { head:"'Poppins',sans-serif", body:"'Nunito',system-ui,sans-serif",
+             fonts:"family=Poppins:wght@500;600;700;800&family=Nunito:wght@400;600;700;800",
+             dark:"#1f3d2b", accent:"#5cb85c", paper:"#f6faf4", radius:"22px", logoRound:"14px", size:"1rem" },
+  bold:    { head:"'Oswald',sans-serif", body:"'Roboto',system-ui,sans-serif",
+             fonts:"family=Oswald:wght@500;600;700&family=Roboto:wght@400;500;700;900",
+             dark:"#1a1a1a", accent:"#f59e0b", paper:"#f7f7f5", radius:"10px", logoRound:"6px", size:"1rem" },
+};
+
+const EXAMPLES = {
+  electric: {
+    name:"Ashaway Electric", logoLetter:"", phone:"(401) 377-2228", location:"Ashaway, RI",
+    address:"51 Old Hopkinton Cemetery Rd, Ashaway, RI 02804", email:"",
+    theme:"modern", cDark:"#14213d", cAccent:"#3b82f6", cPaper:"#f7f9fc", heroImg:"",
+    emoji:"⚡", headline:"Electrical work,", headlineAccent:"done right the first time",
+    lead:"Ashaway Electric is a local electrical contractor serving Ashaway, RI and the surrounding area: residential and commercial work handled with care.",
+    rating:"5.0", ratingSource:"Google", stat2:"Res. + Comm.", stat2Label:"Full-service",
+    servicesTitle:"Full-service electrical work",
+    servicesBlurb:"Reach out and we'll give you a straight answer over the phone.",
+    services:"🏠 | Residential Wiring | Rewiring, outlets, lighting, and everyday electrical repairs for your home.\n🏢 | Commercial Electrical | Electrical service and maintenance for local businesses.\n🔌 | Panel & Service Upgrades | Modernize your panel to safely handle today's power needs.\n🔋 | Generator Installation | From choosing the right generator to full installation.\n🛠️ | Troubleshooting & Repairs | Fast, accurate diagnosis for flickering lights and tripped breakers.\n🧰 | New Construction | Full electrical installation for homes built from the ground up.",
+    reviews:"Tod did a very efficient job. He was knowledgeable, friendly, and timely. | Google Review\nVery responsive in a short amount of time. The service was excellent and very professional. | Glock Intrek",
+    aboutTitle:"Local, dependable, and easy to reach",
+    aboutText:"Ashaway Electric serves Ashaway, RI and the surrounding area with residential and commercial electrical work, from routine repairs to full panel upgrades and generator installs.",
+    whyTitle:"Why customers keep calling us back",
+    why:"Fast, responsive scheduling\nKnowledgeable, friendly, and timely\nResidential & commercial experience\n5.0★ rated on Google",
+    hours:"", ctaTitle:"Need an electrician? Just call.",
+    footerBlurb:"Residential & commercial electrical contractor serving Ashaway, RI and the surrounding area.",
+    footerTag:"Call for a quote."
+  },
+  barber: {
+    name:"The Gentleman Barber", logoLetter:"G", phone:"(401) 539-6030", location:"Wyoming, RI",
+    address:"1137 Main St, Wyoming, RI", email:"",
+    theme:"classic", cDark:"#571620", cAccent:"#d4af6a", cPaper:"#faf5e8", heroImg:"",
+    emoji:"✂️", headline:"Haircuts done right", headlineAccent:"",
+    lead:"A classic, one-chair shop where you're greeted by name.",
+    rating:"5.0", ratingSource:"Yelp", stat2:"One Chair", stat2Label:"Owner-operated",
+    servicesTitle:"", servicesBlurb:"", services:"", reviews:"",
+    aboutTitle:"A real neighborhood barbershop",
+    aboutText:"The Gentleman Barber is a classic, one-chair shop in Wyoming, RI: the kind of place where you walk out with a cut that's actually done right.\n\nCustomers keep coming back for honest work, a fair price, and a barber who takes the time to finish the lines properly.",
+    whyTitle:"Why the regulars keep coming back",
+    why:"Quick, easy, no-fuss haircuts\nSharp lines and clean fades\nFair, honest pricing\nOld-time barbershop atmosphere",
+    hours:"Monday | 8:30 AM – 5 PM\nTuesday | 8:30 AM – Noon\nWednesday | 8:30 AM – 5 PM\nThursday | 8:30 AM – 6 PM\nFriday | 8:30 AM – 5 PM\nSaturday | 8:30 AM – 11 AM\nSunday | Closed",
+    ctaTitle:"Ready for a cut?",
+    footerBlurb:"A classic, owner-operated barbershop in Wyoming, RI. Walk in for a real haircut.",
+    footerTag:"Walk-ins welcome."
+  },
+  landscape: {
+    name:"Green Acre Landscaping", logoLetter:"", phone:"(555) 010-2040", location:"Your Town",
+    address:"12 Example Rd, Your Town", email:"hello@example.com",
+    theme:"fresh", cDark:"#1f3d2b", cAccent:"#5cb85c", cPaper:"#f6faf4", heroImg:"",
+    emoji:"🌿", headline:"Yards you'll", headlineAccent:"actually want to show off",
+    lead:"Mowing, cleanups, and landscape design for homes in the area. Free estimates, every time.",
+    rating:"4.9", ratingSource:"Google", stat2:"10+ yrs", stat2Label:"In business",
+    servicesTitle:"What we take care of", servicesBlurb:"Weekly service or one-time projects, just ask.",
+    services:"🌱 | Lawn Care | Weekly mowing, edging, and trimming all season long.\n🍂 | Seasonal Cleanups | Spring and fall cleanups, leaf removal, and bed prep.\n🪴 | Planting & Design | New beds, shrubs, and plantings designed for your yard.\n🪨 | Hardscaping | Walkways, patios, and retaining walls.",
+    reviews:"Showed up on time every week and the yard has never looked better. | Sample Customer\nFair price and great communication. Highly recommend. | Another Customer",
+    aboutTitle:"Locally owned, out there every day",
+    aboutText:"We're a small local crew that treats every yard like our own.",
+    whyTitle:"Why neighbors pick us",
+    why:"Free, no-pressure estimates\nReliable weekly schedule\nFully insured",
+    hours:"Mon – Fri | 7 AM – 6 PM\nSaturday | 8 AM – 2 PM\nSunday | Closed",
+    ctaTitle:"Get a free estimate",
+    footerBlurb:"Lawn care and landscaping for homes in the area.",
+    footerTag:"Free estimates."
+  }
+};
+
+const STORE_KEY = 'siteKit.project.v1';
+let data = {};
+let saveTimer, renderTimer;
+
+/* ---------- helpers ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lines = s => String(s || '').split('\n').map(l => l.trim()).filter(Boolean);
+const parts = l => l.split('|').map(p => p.trim());
+const telHref = p => { const d = String(p).replace(/\D/g, ''); return d.length === 10 ? '+1' + d : (d ? '+' + d : ''); };
+const slug = s => String(s || 'site').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'site';
+
+function hexToRgb(h){ const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function mix(a, b, t){ const A = hexToRgb(a), B = hexToRgb(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); }
+function luminance(h){ const [r, g, b] = hexToRgb(h).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * r + .7152 * g + .0722 * b; }
+// text color that reads on top of the accent
+const onColor = h => luminance(h) > 0.4 ? '#14161f' : '#ffffff';
+
+/* ---------- site template ---------- */
+function buildSite(d){
+  const t = THEMES[d.theme] || THEMES.modern;
+  const dark = d.cDark || t.dark, accent = d.cAccent || t.accent, paper = d.cPaper || t.paper;
+  const onAccent = onColor(accent);
+  const name = esc(d.name || 'Your Business');
+  const letter = esc((d.logoLetter || d.name || 'Y').trim().charAt(0).toUpperCase() + (d.logoLetter || '').trim().slice(1));
+  const tel = telHref(d.phone), phone = esc(d.phone);
+  const services = lines(d.services).map(parts);
+  const reviews = lines(d.reviews).map(parts);
+  const hours = lines(d.hours).map(parts);
+  const why = lines(d.why);
+  const aboutParas = String(d.aboutText || '').split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+  const hasAbout = d.aboutTitle || aboutParas.length || why.length;
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
+  const nav = [
+    services.length && ['services', 'Services'],
+    reviews.length && ['reviews', 'Reviews'],
+    hours.length && ['hours', 'Hours'],
+    ['contact', 'Contact'],
+  ].filter(Boolean);
+
+  const favicon = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='${dark}'/><text x='50' y='70' font-size='58' font-family='Arial' font-weight='900' fill='${accent}' text-anchor='middle'>${letter.charAt(0)}</text></svg>`)}`;
+  const heroBg = d.heroImg
+    ? `linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url('${d.heroImg}') center/cover no-repeat`
+    : `linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.35)), repeating-linear-gradient(135deg, ${accent}14 0 18px, transparent 18px 36px), ${dark}`;
+  const callBtn = tel ? `<a class="btn btn-primary" href="tel:${tel}">Call Now</a>` : '';
+
+  const stats = [
+    d.rating && `<div class="rating"><strong>${esc(d.rating)} ★★★★★</strong><span>${esc(d.ratingSource || '')} rating</span></div>`,
+    d.stat2 && `<div><strong>${esc(d.stat2)}</strong><span>${esc(d.stat2Label || '')}</span></div>`,
+  ].filter(Boolean).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${name}${d.location ? ' | ' + esc(d.location) : ''}</title>
+<meta name="description" content="${esc(d.lead || d.footerBlurb || '')}${phone ? ' Call ' + phone + '.' : ''}">
+<link rel="icon" href="${favicon}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?${t.fonts}&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dark:${dark};
+    --dark-2:${mix(dark, '#ffffff', 0.06)};
+    --dark-3:${mix(dark, '#ffffff', 0.12)};
+    --paper:${paper};
+    --panel:#ffffff;
+    --accent:${accent};
+    --accent-deep:${mix(accent, '#000000', 0.25)};
+    --on-accent:${onAccent};
+    --ink:#16192a;
+    --ink-soft:#5a6178;
+    --line:${mix(paper, '#000000', 0.08)};
+    --muted:rgba(255,255,255,0.7);
+    --faint:rgba(255,255,255,0.5);
+    --shadow:0 20px 50px -22px rgba(10,20,50,0.25);
+    --radius:${t.radius};
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:${t.body};font-size:${t.size};color:var(--ink);background:var(--paper);padding-bottom:${tel ? '76px' : '0'};}
+  h1,h2,h3,.logo{font-family:${t.head};}
+  a{color:inherit;}
+  img,svg{max-width:100%;display:block;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px;}
+
+  header{position:sticky;top:0;z-index:40;background:var(--dark);border-bottom:3px solid var(--accent);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1140px;margin:0 auto;gap:16px;}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;letter-spacing:-0.01em;color:#fff;}
+  .logo-mark{width:38px;height:38px;flex:none;border-radius:${t.logoRound};background:var(--accent);display:flex;align-items:center;justify-content:center;color:var(--on-accent);font-weight:800;}
+  .nav-links{display:flex;gap:30px;font-weight:600;font-size:0.95rem;list-style:none;margin:0;padding:0;}
+  .nav-links a{text-decoration:none;color:var(--muted);}
+  .nav-links a:hover{color:var(--accent);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:10px;font-weight:800;font-size:0.95rem;text-decoration:none;cursor:pointer;border:2px solid transparent;transition:transform .15s ease, box-shadow .15s ease;white-space:nowrap;}
+  .btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:0 10px 20px -8px var(--accent);}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,0.3);}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+  @media(max-width:760px){.nav-links{display:none;}}
+
+  .hero{background:${heroBg};color:#fff;padding:80px 0 90px;}
+  .hero-grid{max-width:700px;margin:0 auto;text-align:center;display:flex;flex-direction:column;align-items:center;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--on-accent);padding:8px 16px;border-radius:999px;font-size:0.82rem;font-weight:800;margin-bottom:22px;letter-spacing:0.02em;}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.08;letter-spacing:-0.02em;margin:0 0 20px;}
+  .hero h1 .accent{color:var(--accent);}
+  .hero p.lead{font-size:1.1rem;color:var(--muted);max-width:540px;margin:0 auto 32px;line-height:1.6;}
+  .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;}
+  .hero-stats{display:flex;gap:44px;margin-top:44px;flex-wrap:wrap;justify-content:center;align-items:center;}
+  .hero-stats div{text-align:center;}
+  .hero-stats strong{display:block;font-family:${t.head};font-size:1.6rem;color:var(--accent);}
+  .hero-stats span{font-size:0.82rem;color:var(--faint);}
+  .hero-stats .rating strong{font-size:2.4rem;}
+
+  section{padding:80px 0;}
+  .section-head{max-width:620px;margin:0 auto 50px;text-align:center;}
+  .kicker{display:inline-block;font-weight:800;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:10px;}
+  .section-head h2{font-size:clamp(1.8rem,3.5vw,2.4rem);letter-spacing:-0.02em;margin:0 0 12px;}
+  .section-head p{color:var(--ink-soft);font-size:1.02rem;line-height:1.6;margin:0;}
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  @media(max-width:900px){.services-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:600px){.services-grid{grid-template-columns:1fr;}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);}
+  .svc-icon{width:50px;height:50px;border-radius:12px;background:var(--dark);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:16px;}
+  .card h3{font-size:1.15rem;margin:0 0 8px;}
+  .card p{color:var(--ink-soft);line-height:1.55;margin:0;font-size:0.95rem;}
+
+  .dark-sec{background:var(--dark-2);color:#fff;}
+  .dark-sec .section-head p{color:var(--muted);}
+  .dark-sec .kicker{color:var(--accent);}
+  .reviews-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+  @media(max-width:760px){.reviews-grid{grid-template-columns:1fr;}}
+  .review-card{background:var(--dark-3);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:26px;}
+  .stars{color:var(--accent);letter-spacing:2px;margin-bottom:12px;}
+  .review-card p{line-height:1.65;color:rgba(255,255,255,0.9);margin:0 0 16px;}
+  .review-meta{font-size:0.85rem;color:var(--faint);font-weight:600;}
+
+  .about-grid{display:flex;gap:48px;align-items:center;flex-wrap:wrap;}
+  .about-grid > div{flex:1;min-width:280px;}
+  .about-badge{width:60px;height:60px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:18px;}
+  #about h2{font-size:clamp(1.7rem,3.2vw,2.2rem);letter-spacing:-0.02em;margin:0 0 16px;}
+  #about .about-copy p{color:var(--ink-soft);line-height:1.7;font-size:1.02rem;margin:0 0 14px;}
+  .why p{margin:0 0 10px !important;color:var(--ink) !important;}
+
+  .hours-table{max-width:480px;margin:0 auto;background:var(--dark-3);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);overflow:hidden;}
+  .hours-row{display:flex;justify-content:space-between;gap:16px;padding:14px 26px;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .hours-row:last-child{border-bottom:none;}
+  .hours-row.today{background:rgba(255,255,255,0.08);}
+  .hours-row .day{font-weight:600;}
+  .hours-row .time{color:var(--muted);text-align:right;}
+
+  .cta-banner{background:var(--accent);border-radius:28px;padding:56px 40px;color:var(--on-accent);text-align:center;}
+  .cta-banner h2{font-size:clamp(1.7rem,4vw,2.3rem);margin:0 0 22px;}
+  .phone-big{display:inline-flex;align-items:center;gap:12px;background:var(--dark);color:#fff;font-family:${t.head};font-weight:800;font-size:clamp(1.3rem,3vw,1.8rem);padding:18px 32px;border-radius:12px;text-decoration:none;transition:transform .15s ease;}
+  .phone-big:hover{transform:translateY(-2px);}
+  .cta-sub{margin-top:16px;font-size:0.9rem;opacity:.85;}
+  .cta-sub a{color:inherit;}
+
+  footer{background:var(--dark);color:#fff;padding:56px 0 40px;}
+  .footer-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:36px;margin-bottom:36px;}
+  .footer-brand p{color:var(--faint);max-width:300px;line-height:1.6;font-size:0.9rem;margin-top:14px;}
+  .footer-col h5{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--faint);margin:0 0 14px;}
+  .footer-col a,.footer-col p{display:block;color:rgba(255,255,255,0.85);text-decoration:none;font-size:0.95rem;margin:0 0 8px;line-height:1.5;}
+  .footer-col a:hover{color:var(--accent);}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,0.1);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:0.82rem;color:var(--faint);}
+
+  .call-bar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--dark);border-top:3px solid var(--accent);padding:14px 20px;display:flex;justify-content:center;}
+  .call-bar a{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:800;font-family:${t.head};font-size:1.02rem;}
+  .call-bar .ring{width:30px;height:30px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;}
+  ::selection{background:var(--accent);color:var(--on-accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo"><span class="logo-mark">${letter}</span> ${name}</div>
+    <ul class="nav-links">
+      ${nav.map(([id, label]) => `<li><a href="#${id}">${label}</a></li>`).join('\n      ')}
+    </ul>
+    ${callBtn}
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    ${d.location || d.emoji ? `<div class="eyebrow">${esc(d.emoji)} ${esc(d.location)}</div>` : ''}
+    <h1>${esc(d.headline || name)}${d.headlineAccent ? ` <span class="accent">${esc(d.headlineAccent)}</span>` : ''}</h1>
+    ${d.lead ? `<p class="lead">${esc(d.lead)}</p>` : ''}
+    <div class="hero-actions">
+      ${tel ? `<a class="btn btn-primary" href="tel:${tel}">📞 Call ${phone}</a>` : ''}
+      ${reviews.length ? `<a class="btn btn-ghost" href="#reviews">See our reviews</a>` : services.length ? `<a class="btn btn-ghost" href="#services">Our services</a>` : ''}
+    </div>
+    ${stats ? `<div class="hero-stats">${stats}</div>` : ''}
+  </div>
+</section>
+${services.length ? `
+<section id="services">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">What we do</span>
+      <h2>${esc(d.servicesTitle || 'Our services')}</h2>
+      ${d.servicesBlurb ? `<p>${esc(d.servicesBlurb)}</p>` : ''}
+    </div>
+    <div class="services-grid">
+      ${services.map(([icon, title, desc]) => `<div class="card reveal">
+        ${icon ? `<div class="svc-icon">${esc(icon)}</div>` : ''}
+        <h3>${esc(title)}</h3>
+        ${desc ? `<p>${esc(desc)}</p>` : ''}
+      </div>`).join('\n      ')}
+    </div>
+  </div>
+</section>` : ''}
+${reviews.length ? `
+<section id="reviews" class="dark-sec">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Reviews</span>
+      <h2>What our customers say</h2>
+      ${d.ratingSource ? `<p>Real reviews from ${esc(d.ratingSource)}.</p>` : ''}
+    </div>
+    <div class="reviews-grid">
+      ${reviews.map(([quote, who]) => `<div class="review-card reveal">
+        <div class="stars">★★★★★</div>
+        <p>“${esc(quote)}”</p>
+        ${who ? `<div class="review-meta">${esc(who)}</div>` : ''}
+      </div>`).join('\n      ')}
+    </div>
+  </div>
+</section>` : ''}
+${hasAbout ? `
+<section id="about">
+  <div class="wrap about-grid">
+    <div class="reveal about-copy">
+      ${d.emoji ? `<div class="about-badge">${esc(d.emoji)}</div>` : ''}
+      ${d.aboutTitle ? `<h2>${esc(d.aboutTitle)}</h2>` : ''}
+      ${aboutParas.map(p => `<p>${esc(p)}</p>`).join('\n      ')}
+    </div>
+    ${why.length ? `<div class="reveal">
+      <div class="card why">
+        ${d.whyTitle ? `<h3>${esc(d.whyTitle)}</h3>` : ''}
+        ${why.map(w => `<p>✓ ${esc(w)}</p>`).join('\n        ')}
+      </div>
+    </div>` : ''}
+  </div>
+</section>` : ''}
+${hours.length ? `
+<section id="hours" class="dark-sec">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Hours</span>
+      <h2>When we're open</h2>
+    </div>
+    <div class="hours-table reveal">
+      ${hours.map(([day, time]) => `<div class="hours-row${day.toLowerCase() === today.toLowerCase() ? ' today' : ''}"><span class="day">${esc(day)}</span><span class="time">${esc(time || '')}</span></div>`).join('\n      ')}
+    </div>
+  </div>
+</section>` : ''}
+
+<section id="contact">
+  <div class="wrap">
+    <div class="cta-banner reveal">
+      <h2>${esc(d.ctaTitle || 'Get in touch')}</h2>
+      ${tel ? `<a class="phone-big" href="tel:${tel}"><span>📞</span> ${phone}</a>` : ''}
+      ${d.address ? `<div class="cta-sub">${esc(d.address)}</div>` : ''}
+      ${d.email ? `<div class="cta-sub"><a href="mailto:${esc(d.email)}">${esc(d.email)}</a></div>` : ''}
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo-mark">${letter}</span> ${name}</div>
+        ${d.footerBlurb ? `<p>${esc(d.footerBlurb)}</p>` : ''}
+      </div>
+      <div class="footer-col">
+        <h5>Site</h5>
+        ${nav.filter(([id]) => id !== 'contact').map(([id, label]) => `<a href="#${id}">${label}</a>`).join('\n        ')}
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        ${tel ? `<a href="tel:${tel}">📞 ${phone}</a>` : ''}
+        ${d.email ? `<a href="mailto:${esc(d.email)}">✉️ ${esc(d.email)}</a>` : ''}
+        ${d.address ? `<p>📍 ${esc(d.address)}</p>` : ''}
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> ${name}.</span>
+      ${d.footerTag ? `<span>${esc(d.footerTag)}</span>` : ''}
+    </div>
+  </div>
+</footer>
+${tel ? `
+<div class="call-bar">
+  <a href="tel:${tel}"><span class="ring">📞</span><span>Call: ${phone}</span></a>
+</div>` : ''}
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+<\/script>
+
+</body>
+</html>`;
+}
+
+/* ---------- editor wiring ---------- */
+const fields = [...document.querySelectorAll('[data-k]')];
+const preview = document.getElementById('preview');
+const statusEl = document.getElementById('status');
+
+function fillForm(){ fields.forEach(f => { f.value = data[f.dataset.k] ?? ''; }); }
+function readForm(){ fields.forEach(f => { data[f.dataset.k] = f.value; }); }
+
+function render(){
+  const scroll = preview.contentWindow ? preview.contentWindow.scrollY : 0;
+  preview.srcdoc = buildSite(data);
+  preview.onload = () => {
+    try {
+      // show everything immediately in the preview and keep the scroll spot
+      preview.contentDocument.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+      preview.contentWindow.scrollTo(0, scroll);
+    } catch (e) {}
+  };
+}
+
+function save(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); statusEl.textContent = 'Autosaved in this browser'; }
+  catch (e) { statusEl.textContent = 'Not saved: use Save project to keep a copy'; }
+}
+
+function changed(){
+  readForm();
+  clearTimeout(renderTimer); renderTimer = setTimeout(render, 250);
+  clearTimeout(saveTimer); saveTimer = setTimeout(save, 600);
+}
+
+function load(obj){ data = { ...EXAMPLES.electric, ...obj }; fillForm(); render(); save(); }
+
+fields.forEach(f => f.addEventListener('input', changed));
+
+// switching style resets the colors to that style's defaults
+document.querySelector('[data-k="theme"]').addEventListener('change', e => {
+  const t = THEMES[e.target.value];
+  data.cDark = t.dark; data.cAccent = t.accent; data.cPaper = t.paper;
+  fillForm(); changed();
+});
+
+document.getElementById('example').addEventListener('change', e => {
+  if (!e.target.value) return;
+  if (confirm('Replace what you have with this example?')) load(EXAMPLES[e.target.value]);
+  e.target.value = '';
+});
+
+document.getElementById('heroFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  // shrink big photos so the downloaded file stays small
+  const img = new Image();
+  img.onload = () => {
+    const scale = Math.min(1, 1800 / img.width);
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    data.heroImg = c.toDataURL('image/jpeg', 0.8);
+    URL.revokeObjectURL(img.src);
+    render(); save();
+  };
+  img.src = URL.createObjectURL(file);
+});
+document.getElementById('heroClear').addEventListener('click', () => {
+  data.heroImg = ''; document.getElementById('heroFile').value = ''; render(); save();
+});
+
+function download(name, text, type){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type }));
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+document.getElementById('downloadBtn').addEventListener('click', () => download('index.html', buildSite(data), 'text/html'));
+document.getElementById('exportBtn').addEventListener('click', () => download(slug(data.name) + '.sitekit.json', JSON.stringify(data, null, 2), 'application/json'));
+document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try { load(JSON.parse(await file.text())); } catch (err) { alert('That file is not a Site Kit project.'); }
+  e.target.value = '';
+});
+
+const wrapEl = document.getElementById('frameWrap');
+document.getElementById('vDesk').addEventListener('click', e => { wrapEl.classList.remove('mobile'); e.target.classList.add('on'); document.getElementById('vMob').classList.remove('on'); });
+document.getElementById('vMob').addEventListener('click', e => { wrapEl.classList.add('mobile'); e.target.classList.add('on'); document.getElementById('vDesk').classList.remove('on'); });
+
+/* ---------- start ---------- */
+let saved = null;
+try { saved = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) {}
+load(saved || EXAMPLES.electric);
+</script>
+</body>
+</html>
